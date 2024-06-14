@@ -1,0 +1,1 @@
+export const TON_CONSOLE_APIS_LIST = Symbol('TON_CONSOLE_APIS_LIST');

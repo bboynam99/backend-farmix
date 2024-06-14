@@ -1,0 +1,380 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/staking/pool/list": {
+      "get": {
+        "operationId": "BffController_getFullStakingPoolList",
+        "summary": "Get full staking pool list",
+        "description": "Get full (descriptor, apr's, TVL, user stake and reward) staking pool list with pagination",
+        "parameters": [
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "search query",
+            "example": "TON",
+            "schema": {
+              "minLength": 3,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortBy",
+            "required": false,
+            "in": "query",
+            "description": "sort result by predefined parameters",
+            "example": "tvl",
+            "schema": {
+              "enum": [
+                "tvl",
+                "apr24"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortDirection",
+            "required": false,
+            "in": "query",
+            "description": "define sort direction of sorted result",
+            "example": "ASC",
+            "schema": {
+              "default": "ASC",
+              "enum": [
+                "ASC",
+                "DESC"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "name": "walletAddr",
+            "required": false,
+            "in": "query",
+            "description": "staker wallet addr",
+            "example": "UQAXk8dPDqg-7O3kjxjFG2kHr9XoE6c-vUE1ER-9qJbz8q0l",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "define max resulting items in response",
+            "example": 50,
+            "schema": {
+              "minimum": 0,
+              "maximum": 100,
+              "default": 50,
+              "type": "number"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "description": "define cursor to start pagination, usually it should be set to nextCursor in last response from api",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full staking pool list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FullStakingPoolListSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request exception"
+          }
+        }
+      }
+    },
+    "/api/staking/pool/{symbol}": {
+      "get": {
+        "operationId": "BffController_getFullStakingPool",
+        "summary": "Get full staking pool",
+        "description": "Get full (descriptor, apr's, TVL, user stake and reward) staking pool by pool name",
+        "parameters": [
+          {
+            "name": "symbol",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "walletAddr",
+            "required": false,
+            "in": "query",
+            "description": "staker wallet addr",
+            "example": "UQAXk8dPDqg-7O3kjxjFG2kHr9XoE6c-vUE1ER-9qJbz8q0l",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Full staking pool",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FullStakingPoolSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request exception"
+          },
+          "404": {
+            "description": "Pool with specified name not found"
+          }
+        }
+      }
+    },
+    "/api/rates": {
+      "get": {
+        "operationId": "BffController_getRates",
+        "summary": "get rates by jetton master addr",
+        "description": "Get rates by symbol for ton or jetton master addr, currently support ton and usd rates, the response format is similar to this https://docs.tonconsole.com/tonapi/api-v2 (v2/rates)",
+        "parameters": [
+          {
+            "name": "tokens",
+            "required": true,
+            "in": "query",
+            "description": "accept ton and jetton master addresses, separated by commas",
+            "example": "ton,EQBJOJ2eL_CUFT_0r9meoqjKUwRttC_-NUJyvWQxszVWe1WY",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "record of requested rates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetRatesSchema"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request exception"
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "farmix core api",
+    "description": "",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.stage.farmix.io/",
+      "description": "stage server"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "StakingPoolDescriptorSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "symbol": {
+            "type": "string"
+          },
+          "contractAddr": {
+            "type": "string"
+          },
+          "targetJettonMasterAddr": {
+            "type": "string"
+          },
+          "poolJettonMasterAddr": {
+            "type": "string"
+          },
+          "depositFee": {
+            "type": "string"
+          },
+          "isTonPool": {
+            "type": "boolean"
+          },
+          "imgUrl": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "symbol",
+          "contractAddr",
+          "targetJettonMasterAddr",
+          "poolJettonMasterAddr",
+          "depositFee",
+          "isTonPool"
+        ]
+      },
+      "StakingPoolDerivsSchema": {
+        "type": "object",
+        "properties": {
+          "poolId": {
+            "type": "number"
+          },
+          "tvl": {
+            "type": "string"
+          },
+          "apr24": {
+            "type": "string"
+          },
+          "apr168": {
+            "type": "string"
+          },
+          "apr720": {
+            "type": "string"
+          },
+          "apy": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "poolId",
+          "tvl",
+          "apr24",
+          "apr168",
+          "apr720",
+          "apy"
+        ]
+      },
+      "StakerPoolStatsSchema": {
+        "type": "object",
+        "properties": {
+          "poolId": {
+            "type": "number"
+          },
+          "walletAddr": {
+            "type": "string"
+          },
+          "currentDeposits": {
+            "type": "string"
+          },
+          "totalEarnings": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "poolId",
+          "walletAddr",
+          "currentDeposits",
+          "totalEarnings"
+        ]
+      },
+      "FullStakingPoolSchema": {
+        "type": "object",
+        "properties": {
+          "descriptor": {
+            "$ref": "#/components/schemas/StakingPoolDescriptorSchema"
+          },
+          "currentDerivs": {
+            "$ref": "#/components/schemas/StakingPoolDerivsSchema"
+          },
+          "staker": {
+            "$ref": "#/components/schemas/StakerPoolStatsSchema"
+          }
+        },
+        "required": [
+          "descriptor",
+          "currentDerivs"
+        ]
+      },
+      "FullStakingPoolListSchema": {
+        "type": "object",
+        "properties": {
+          "pools": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FullStakingPoolSchema"
+            }
+          },
+          "nextCursor": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "pools"
+        ]
+      },
+      "TokenRate": {
+        "type": "object",
+        "properties": {
+          "prices": {
+            "type": "object",
+            "patternProperties": {
+              "*": {
+                "type": "number"
+              }
+            },
+            "example": "{\"TON\":1.3710752873163712}"
+          },
+          "diff_24h": {
+            "type": "object",
+            "example": "{\"TON\":\"-1.28%\"}",
+            "patternProperties": {
+              "*": {
+                "type": "string"
+              }
+            }
+          },
+          "diff_7d": {
+            "type": "object",
+            "example": "{\"TON\":\"-1.28%\"}",
+            "patternProperties": {
+              "*": {
+                "type": "string"
+              }
+            }
+          },
+          "diff_30d": {
+            "type": "object",
+            "example": "{\"TON\":\"-1.28%\"}",
+            "patternProperties": {
+              "*": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      },
+      "GetRatesSchema": {
+        "type": "object",
+        "properties": {
+          "rates": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "rates"
+        ]
+      }
+    }
+  }
+}
